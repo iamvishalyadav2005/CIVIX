@@ -5,7 +5,7 @@ import axios from "axios";
 import "./Chat.css"; // External CSS
 import Navbar from "../Navbar/Navbar";
 import { getChatMessages } from "../../services/api";
-const socket = io(process.env.REACT_APP_BACKEND_URL);
+const socket = io(process.env.REACT_APP_BACKEND_URL || "http://localhost:5000");
 
 console.log(process.env.REACT_APP_BACKEND_URL);
 

@@ -46,16 +46,24 @@ const AboutUs = () => {
         <h2>Meet the Team</h2>
         <div className="team-grid">
           <div className="team-member">
-            <img src="/abc.webp" alt="Team member 1" />
+            <img src="/abc.webp" alt="Aditya Pawar" />
             <h4>Aditya Pawar</h4>
+            <p>Lead Developer</p>
           </div>
           <div className="team-member">
-            <img src="/abc.webp" alt="Team member 2" />
+            <img src="/abc.webp" alt="Divyam Gupta" />
             <h4>Divyam Gupta</h4>
+            <p>Frontend Designer</p>
           </div>
           <div className="team-member">
-            <img src="/abc.webp" alt="Team member 3" />
+            <img src="/abc.webp" alt="Amit Kumar" />
             <h4>Amit Kumar</h4>
+            <p>Backend Engineer</p>
+          </div>
+          <div className="team-member">
+            <img src="/abc.webp" alt="Vishal Yadav" />
+            <h4>Vishal Yadav</h4>
+            <p>Full Stack Developer</p>
           </div>
         </div>
       </section>

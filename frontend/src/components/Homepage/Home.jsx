@@ -162,7 +162,9 @@ const Home = () => {
                     </div>
                   )}
                 </div>
-                <span className="status-badge reported">{issue.status}</span>
+                <span className={`status-badge ${issue.status === "in progress" ? "in-progress" : issue.status === "solved" ? "solved" : "reported"}`}>
+                  {issue.status}
+                </span>
 
                 <h3 className="issue-title">{issue.title}</h3>
                 <p className="issue-description">

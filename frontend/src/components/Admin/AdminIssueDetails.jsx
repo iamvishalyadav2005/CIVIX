@@ -104,7 +104,7 @@ const AdminIssueDetails = () => {
     try {
       const token = localStorage.getItem("token");
       const res = await fetch(
-        `${process.env.REACT_APP_BACKEND_URL}/api/admin/issues/${id}/status`,
+        `${process.env.REACT_APP_BACKEND_URL || "http://localhost:5000"}/api/admin/issues/${id}/status`,
         {
           method: "PATCH",
           headers: {

@@ -13,36 +13,60 @@ const AdminDashboard = () => {
   });
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-  const user = JSON.parse(localStorage.getItem("user"));
-
-  const fetchIssues = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const response = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/api/admin/district/${user.districtCode}/issues`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-
-
-      if (response.data.success) {
-        setIssues(response.data.data);
-      }
-    } catch (error) {
-      console.error("Error fetching issues:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [user, setUser] = useState(() => JSON.parse(localStorage.getItem("user") || "{}"));
 
   useEffect(() => {
-    if (!user?.districtCode) {
-      console.error("No district code found for admin");
-      return;
-    }
-    fetchIssues();
-  }, [user?.districtCode]);
+    const initDashboard = async () => {
+      let currentDistrictCode = user.districtCode;
+
+      // If districtCode is missing, try to fetch it from the profile API to resolve it
+      if (!currentDistrictCode && user._id) {
+        try {
+          const token = localStorage.getItem("token");
+          const response = await axios.get(
+            `${process.env.REACT_APP_BACKEND_URL || "http://localhost:5000"}/api/users/${user._id}`,
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
+          if (response.data && response.data.districtCode) {
+            currentDistrictCode = response.data.districtCode;
+            const updatedUser = { ...user, districtCode: currentDistrictCode };
+            localStorage.setItem("user", JSON.stringify(updatedUser));
+            setUser(updatedUser);
+          }
+        } catch (error) {
+          console.error("Error fetching user profile to resolve districtCode:", error);
+        }
+      }
+
+      if (!currentDistrictCode) {
+        console.error("No district code found for admin");
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const token = localStorage.getItem("token");
+        const response = await axios.get(
+          `${process.env.REACT_APP_BACKEND_URL || "http://localhost:5000"}/api/admin/district/${currentDistrictCode}/issues`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+
+        if (response.data.success) {
+          setIssues(response.data.data);
+        }
+      } catch (error) {
+        console.error("Error fetching issues:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    initDashboard();
+  }, [user._id, user.districtCode]);
 
   const handleIssueClick = (issueId) => {
     console.log("Navigating to issue:", issueId); // Debug log
