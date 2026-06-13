@@ -8,4 +8,4 @@ const s3Client = new S3Client({
   },
 });
 
-module.exports = s3Client;
+module.exports = s3Client;

@@ -9,7 +9,7 @@ const chatRoutes = require("./routes/chatRoutes");
 const app = express();
 app.use(
   cors({
-    origin: process.env.frontendurl,
+    origin: "http://localhost:3000",
     credentials: true,
   })
 );

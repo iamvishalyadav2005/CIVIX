@@ -17,4 +17,4 @@ const uploadToS3 = async (file) => {
   return `https://${process.env.AWS_S3_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;
 };
 
-module.exports = uploadToS3;
+module.exports = uploadToS3;
