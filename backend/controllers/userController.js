@@ -5,7 +5,7 @@ const getUserProfile = async (req, res) => {
   try {
     const user = await User.findById(req.params.userId)
       .select(
-        "_id username email createdAt comments reports bio profileImage unsolvedIssues inProgressIssues solvedIssues"
+        "_id username email createdAt comments reports bio profileImage unsolvedIssues inProgressIssues solvedIssues districtCode"
       )
       .populate({
         path: "reports",
