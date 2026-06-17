@@ -117,7 +117,7 @@ const AdminIssueDetails = () => {
 
 
       if (res.ok) {
-        const data = await res.json();
+        await res.json();
         setIssue((prev) => ({ ...prev, status: newStatus }));
         setShowStatusDropdown(false);
       }

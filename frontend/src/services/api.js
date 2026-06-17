@@ -59,7 +59,7 @@ export const updateUserBio = (bio) => {
   return API.patch("/users/updateBio", { bio });
 };
 
-export default {
+const api = {
   login,
   register,
   getUserProfile,
@@ -74,3 +74,5 @@ export default {
   updateprofilepic,
   updateUserBio,
 };
+
+export default api;

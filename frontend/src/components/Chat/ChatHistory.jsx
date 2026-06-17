@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "./ChatHistory.css"; // You can style it similarly to Chat.css
 import Navbar from "../Navbar/Navbar";

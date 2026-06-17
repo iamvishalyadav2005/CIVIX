@@ -66,6 +66,7 @@ const AdminDashboard = () => {
     };
 
     initDashboard();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user._id, user.districtCode]);
 
   const handleIssueClick = (issueId) => {

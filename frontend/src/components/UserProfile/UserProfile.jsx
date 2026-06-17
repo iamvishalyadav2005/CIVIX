@@ -6,7 +6,6 @@ import { getUserProfile } from "../../services/api"
 const UserProfile = () => {
   const { userId } = useParams();
   const navigate = useNavigate();
- const token = localStorage.getItem("token");
   const [profile, setProfile] = useState(null);
   const [tab, setTab] = useState("issues");
 

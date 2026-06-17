@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../Navbar/Navbar";
 import "./Profile.css";
 import { getUserProfile } from "../../services/api";
@@ -11,7 +11,6 @@ const Profile = () => {
   const [tab, setTab] = useState("issues");
   const [avatar, setAvatar] = useState(null);
 
-  const token = localStorage.getItem("token");
   const currentUser = JSON.parse(localStorage.getItem("user"));
   const userId = currentUser?._id;
 

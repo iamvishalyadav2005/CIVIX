@@ -15,16 +15,6 @@ L.Icon.Default.mergeOptions({
   shadowUrl: require("leaflet/dist/images/marker-shadow.png"),
 });
 
-function MapCenter({ center }) {
-  const map = useMap();
-  useEffect(() => {
-    if (center) {
-      map.setView(center);
-    }
-  }, [center, map]);
-  return null;
-}
-
 function LocationMarker({ defaultLocation, onLocationSelect }) {
   const [position, setPosition] = useState(null);
   const map = useMap();
@@ -55,6 +45,7 @@ function LocationMarker({ defaultLocation, onLocationSelect }) {
           onLocationSelect([defaultLocation.lng, defaultLocation.lat], address)
       );
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultLocation, map]);
 
   useMap().on("click", async (e) => {
@@ -141,8 +132,6 @@ const Report = () => {
     setError(null);
 
     try {
-      const token = localStorage.getItem("token");
-
       if (
         !formData.title ||
         !formData.description ||

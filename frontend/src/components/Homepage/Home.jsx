@@ -10,11 +10,6 @@ import {
 } from "react-icons/fa";
 
 import Navbar from "../Navbar/Navbar";
-const statusColors = {
-  reported: "red",
-  "in progress": "goldenrod",
-  resolved: "green",
-};
 
 const Home = () => {
   const navigate = useNavigate();
@@ -78,10 +73,6 @@ const Home = () => {
 
   const handleIssueClick = (issueId) => {
     navigate(`/issue/${issueId}`);
-  };
-
-  const handleReportClick = () => {
-    navigate("/report");
   };
 
   if (loading) {

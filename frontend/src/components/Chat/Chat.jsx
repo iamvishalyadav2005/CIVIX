@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { io } from "socket.io-client";
 import { useLocation, useNavigate } from "react-router-dom";
-import axios from "axios";
 import "./Chat.css"; // External CSS
 import Navbar from "../Navbar/Navbar";
 import { getChatMessages } from "../../services/api";
