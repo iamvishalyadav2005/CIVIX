@@ -3,7 +3,7 @@
 CIVIX is a full-stack web platform that helps citizens report, track, and resolve civic issues with real-time updates.  
 It makes it easier for people to raise concerns and for local authorities to respond quickly.
 
-🔗 [Live App](https://civix-frontend-3.onrender.com/)
+🔗 [Live App](https://civix-frontend.vercel.app)
 
 ---
 
