@@ -19,7 +19,7 @@ const io = new Server(server, {
   cors: {
     origin: (origin, callback) => {
       if (!origin || allowedOrigins.indexOf(origin) !== -1 || origin.endsWith(".vercel.app")) {
-        callback(null, true);
+        callback(null, origin || true);
       } else {
         callback(new Error("CORS policy blocked Socket.IO access"));
       }

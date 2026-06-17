@@ -19,11 +19,11 @@ app.use(
       if (!origin) return callback(null, true);
       if (allowedOrigins.indexOf(origin) === -1) {
         if (origin.endsWith(".vercel.app")) {
-          return callback(null, true);
+          return callback(null, origin);
         }
         return callback(new Error("CORS policy blocked access"), false);
       }
-      return callback(null, true);
+      return callback(null, origin);
     },
     credentials: true,
   })
