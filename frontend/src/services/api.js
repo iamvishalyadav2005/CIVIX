@@ -1,8 +1,14 @@
 import axios from "axios";
 
 // Set up the base URL for the backend API
+let rawBaseURL = process.env.REACT_APP_API_URL || process.env.REACT_APP_BACKEND_URL || "http://localhost:5000";
+if (rawBaseURL.endsWith("/api")) {
+  rawBaseURL = rawBaseURL.slice(0, -4);
+} else if (rawBaseURL.endsWith("/api/")) {
+  rawBaseURL = rawBaseURL.slice(0, -5);
+}
 const API = axios.create({
-  baseURL: `${process.env.REACT_APP_API_URL || process.env.REACT_APP_BACKEND_URL || "http://localhost:5000"}/api`
+  baseURL: `${rawBaseURL}/api`
 });
 
 // Automatically attach token from localStorage
