@@ -7,16 +7,16 @@ const ChatHistory = () => {
   const [users, setUsers] = useState([]);
   const navigate = useNavigate();
 
-  const currentUser = JSON.parse(localStorage.getItem("user"));
+  const currentUser = JSON.parse(localStorage.getItem("user") || "{}");
   const token = localStorage.getItem("token");
 
   useEffect(() => {
-    if (!currentUser || !token) return navigate("/login");
+    if (!currentUser?._id || !token) return navigate("/login");
 
     const fetchHistory = async () => {
       try {
         const res = await getChatHistory(); 
-        setUsers(res.data);
+        setUsers(Array.isArray(res.data) ? res.data : []);
       } catch (err) {
         console.error(
           "Failed to fetch chat history:",
@@ -25,7 +25,7 @@ const ChatHistory = () => {
       }
     };
     fetchHistory();
-  }, [token, currentUser, navigate]);
+  }, [token, currentUser?._id, navigate]);
 
   const handleStartChat = (receiverUser) => {
     navigate("/chat", {

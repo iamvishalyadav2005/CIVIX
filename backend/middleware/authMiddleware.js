@@ -28,7 +28,7 @@ exports.protect = async (req, res, next) => {
 };
 
 exports.isAdmin = (req, res, next) => {
-  if (req.user.role !== "admin" && req.user.role !== "superadmin") {
+  if (req.user.role !== "admin") {
     return res.status(403).json({ msg: "Admin access required" });
   }
   next();

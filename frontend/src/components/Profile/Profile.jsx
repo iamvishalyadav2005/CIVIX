@@ -11,10 +11,15 @@ const Profile = () => {
   const [tab, setTab] = useState("issues");
   const [avatar, setAvatar] = useState(null);
 
-  const currentUser = JSON.parse(localStorage.getItem("user"));
+  const currentUser = JSON.parse(localStorage.getItem("user") || "{}");
   const userId = currentUser?._id;
 
   useEffect(() => {
+    if (!userId) {
+      navigate("/login");
+      return;
+    }
+
     const fetchUserProfile = async () => {
       try {
         const res = await getUserProfile(userId);
@@ -24,10 +29,8 @@ const Profile = () => {
       }
     };
    
-    if (userId) {
-      fetchUserProfile(); 
-    }
-  }, [userId]);
+    fetchUserProfile(); 
+  }, [userId, navigate]);
 
   const handleChatClick = () => {
     if (!currentUser || !profile) return;
@@ -143,8 +146,10 @@ const Profile = () => {
           <button
             className="chat-btn"
             onClick={() => {
+              localStorage.removeItem("token");
               localStorage.removeItem("user");
-              navigate("/");
+              localStorage.removeItem("details");
+              navigate("/login");
             }}
           >
             Logout

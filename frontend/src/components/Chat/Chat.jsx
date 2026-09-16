@@ -3,10 +3,9 @@ import { io } from "socket.io-client";
 import { useLocation, useNavigate } from "react-router-dom";
 import "./Chat.css"; // External CSS
 import Navbar from "../Navbar/Navbar";
-import { getChatMessages } from "../../services/api";
-const socket = io(process.env.REACT_APP_BACKEND_URL || "http://localhost:5000");
+import { getChatMessages, BACKEND_URL } from "../../services/api";
 
-console.log(process.env.REACT_APP_BACKEND_URL);
+const socket = io(BACKEND_URL);
 
 const Chat = () => {
   const location = useLocation();

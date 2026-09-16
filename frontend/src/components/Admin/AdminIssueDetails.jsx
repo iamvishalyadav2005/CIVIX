@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { addComment } from "../../services/api"; 
-import { getIssueById } from "../../services/api";
-import { upvoteIssue } from "../../services/api";
+import {
+  addComment,
+  getIssueById,
+  upvoteIssue,
+  updateIssueStatus,
+} from "../../services/api";
 import {
   FaMapMarkerAlt,
   FaThumbsUp,
@@ -25,7 +28,8 @@ const AdminIssueDetails = () => {
   const [hasUpvoted, setHasUpvoted] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [showStatusDropdown, setShowStatusDropdown] = useState(false);
-  const userId = JSON.parse(localStorage.getItem("user"))._id;
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const userId = user?._id;
 
   useEffect(() => {
     const fetchIssue = async () => {
@@ -45,8 +49,8 @@ const AdminIssueDetails = () => {
     if (id) fetchIssue();
   }, [id]);
   useEffect(() => {
-    if (issue) {
-      setHasUpvoted(issue.upvotes.includes(userId));
+    if (issue && userId) {
+      setHasUpvoted(Array.isArray(issue.upvotes) && issue.upvotes.includes(userId));
     }
   }, [issue, userId]);
 
@@ -59,7 +63,7 @@ const AdminIssueDetails = () => {
 
       setIssue((prev) => ({
         ...prev,
-        comments: [...prev.comments, data.comment],
+        comments: [...(prev.comments || []), data.comment],
       }));
       setComment("");
     } catch (err) {
@@ -78,8 +82,8 @@ const AdminIssueDetails = () => {
         setIssue((prev) => ({
           ...prev,
           upvotes: hasUpvoted
-            ? prev.upvotes.filter((uid) => uid !== userId)
-            : [...prev.upvotes, userId],
+            ? (prev.upvotes || []).filter((uid) => uid !== userId)
+            : [...(prev.upvotes || []), userId],
         }));
         setHasUpvoted(!hasUpvoted);
       }
@@ -102,22 +106,8 @@ const AdminIssueDetails = () => {
 
   const handleStatusChange = async (newStatus) => {
     try {
-      const token = localStorage.getItem("token");
-      const res = await fetch(
-        `${process.env.REACT_APP_BACKEND_URL || "http://localhost:5000"}/api/admin/issues/${id}/status`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ status: newStatus }),
-        }
-      );
-
-
-      if (res.ok) {
-        await res.json();
+      const res = await updateIssueStatus(id, newStatus);
+      if (res.status === 200) {
         setIssue((prev) => ({ ...prev, status: newStatus }));
         setShowStatusDropdown(false);
       }
@@ -267,9 +257,11 @@ const AdminIssueDetails = () => {
               <div>
                 <span
                   className="comment-user"
-                  onClick={() => navigate(`/user/${issue.createdBy._id}`)}
+                  onClick={() =>
+                    issue.createdBy?._id && navigate(`/user/${issue.createdBy._id}`)
+                  }
                 >
-                  {issue.createdBy.username}
+                  {issue.createdBy?.username || "Anonymous"}
                 </span>
                 <div className="reporter-role">Reporter</div>
               </div>
@@ -304,9 +296,9 @@ const AdminIssueDetails = () => {
                     <div className="comment-meta">
                       <span
                         className="comment-user"
-                        onClick={() => navigate(`/user/${c.user._id}`)}
+                        onClick={() => c.user?._id && navigate(`/user/${c.user._id}`)}
                       >
-                        {c.user.username}
+                        {c.user?.username || "User"}
                       </span>
                       <span className="comment-date">
                         {new Date(c.createdAt).toLocaleString(undefined, {

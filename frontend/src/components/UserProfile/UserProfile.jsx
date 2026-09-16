@@ -10,7 +10,7 @@ const UserProfile = () => {
   const [tab, setTab] = useState("issues");
 
   // ✅ Load logged-in user from localStorage
-  const currentUser = JSON.parse(localStorage.getItem("user"));
+  const currentUser = JSON.parse(localStorage.getItem("user") || "{}");
   console.log("Current User:", currentUser);
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -28,7 +28,7 @@ const UserProfile = () => {
   const handleChatClick = () => {
     console.log("Starting chat with:", profile);
     console.log("Current User:", currentUser);
-    if (!currentUser || !profile) return;
+    if (!currentUser?._id || !profile) return;
 
     navigate("/chat", {
       state: {
@@ -93,13 +93,13 @@ const UserProfile = () => {
 
         <div className="profile-stats">
           <span>
-            <b>{profile.issuesReported}</b> Issues Reported
+            <b>{profile.issuesReported || 0}</b> Issues Reported
           </span>
           <span>
-            <b>{profile.commentsCount}</b> Comments
+            <b>{profile.commentsCount || 0}</b> Comments
           </span>
           <span>
-            <b>{profile.totalUpvotes}</b> Total Upvotes
+            <b>{profile.totalUpvotes || 0}</b> Total Upvotes
           </span>
         </div>
 
@@ -120,7 +120,7 @@ const UserProfile = () => {
 
         {tab === "issues" && (
           <div className="reported-issues-list">
-            {profile.reportedIssues.map((issue) => (
+            {(profile.reportedIssues || []).map((issue) => (
               <div key={issue._id} className="issue-card">
                 <span className={`status-badge ${issue.status}`}>
                   {issue.status}
@@ -140,7 +140,7 @@ const UserProfile = () => {
 
         {tab === "comments" && (
           <div className="user-comments-list">
-            {profile.comments.map((c, idx) => (
+            {(profile.comments || []).map((c, idx) => (
               <div key={idx} className="comment-card">
                 <Link to={`/issue/${c.issue?._id}`}>
                   {c.issue?.title || "Issue"}

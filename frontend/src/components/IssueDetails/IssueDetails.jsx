@@ -23,7 +23,8 @@ const IssueDetails = () => {
   const [loading, setLoading] = useState(true);
   const [hasUpvoted, setHasUpvoted] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const userId = JSON.parse(localStorage.getItem("user"))._id;
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const userId = user?._id;
 
   useEffect(() => {
     const fetchIssue = async () => {
@@ -43,8 +44,8 @@ const IssueDetails = () => {
     if (id) fetchIssue();
   }, [id]);
   useEffect(() => {
-    if (issue) {
-      setHasUpvoted(issue.upvotes.includes(userId));
+    if (issue && userId) {
+      setHasUpvoted(Array.isArray(issue.upvotes) && issue.upvotes.includes(userId));
     }
   }, [issue, userId]);
 
@@ -57,7 +58,7 @@ const IssueDetails = () => {
 
       setIssue((prev) => ({
         ...prev,
-        comments: [...prev.comments, data.comment],
+        comments: [...(prev.comments || []), data.comment],
       }));
       setComment("");
     } catch (err) {
@@ -212,9 +213,11 @@ const IssueDetails = () => {
               <div>
                 <span
                   className="comment-user"
-                  onClick={() => navigate(`/user/${issue.createdBy._id}`)}
+                  onClick={() =>
+                    issue.createdBy?._id && navigate(`/user/${issue.createdBy._id}`)
+                  }
                 >
-                  {issue.createdBy.username}
+                  {issue.createdBy?.username || "Anonymous"}
                 </span>
                 <div className="reporter-role">Reporter</div>
               </div>
@@ -249,9 +252,9 @@ const IssueDetails = () => {
                     <div className="comment-meta">
                       <span
                         className="comment-user"
-                        onClick={() => navigate(`/user/${c.user._id}`)}
+                        onClick={() => c.user?._id && navigate(`/user/${c.user._id}`)}
                       >
-                        {c.user.username}
+                        {c.user?.username || "User"}
                       </span>
                       <span className="comment-date">
                         {new Date(c.createdAt).toLocaleString(undefined, {

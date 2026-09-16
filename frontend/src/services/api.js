@@ -1,14 +1,23 @@
 import axios from "axios";
 
 // Set up the base URL for the backend API
-let rawBaseURL = process.env.REACT_APP_API_URL || process.env.REACT_APP_BACKEND_URL || "http://localhost:5000";
+const DEFAULT_BACKEND_URL = "https://civix-backend-u5tc.onrender.com";
+let rawBaseURL =
+  process.env.REACT_APP_API_URL ||
+  process.env.REACT_APP_BACKEND_URL ||
+  DEFAULT_BACKEND_URL;
+
 if (rawBaseURL.endsWith("/api")) {
   rawBaseURL = rawBaseURL.slice(0, -4);
 } else if (rawBaseURL.endsWith("/api/")) {
   rawBaseURL = rawBaseURL.slice(0, -5);
 }
-const API = axios.create({
-  baseURL: `${rawBaseURL}/api`
+
+export const BACKEND_URL = rawBaseURL;
+
+export const API = axios.create({
+  baseURL: `${rawBaseURL}/api`,
+  timeout: 45000, // accommodate Render free-tier cold starts
 });
 
 // Automatically attach token from localStorage
@@ -28,7 +37,7 @@ export const login = (credentials) => API.post("/auth/login", credentials);
 export const register = (userData) => API.post("/auth/register", userData);
 
 // User routes
-export const getUserProfile = (userId) => API.get(`users/${userId}`);
+export const getUserProfile = (userId) => API.get(`/users/${userId}`);
 
 // Issues
 export const addIssue = (data) => API.post("/issues", data);
@@ -45,7 +54,11 @@ export const getChatHistory = () => API.get("/chat-history");
 export const getChatMessages = (senderId, receiverId) =>
   API.get(`/messages/${senderId}/${receiverId}`);
 
-// Admin - now protected
+// Admin routes
+export const getDistrictIssues = (districtCode) =>
+  API.get(`/admin/district/${districtCode}/issues`);
+export const getDistrictStats = (districtCode) =>
+  API.get(`/admin/district/${districtCode}/stats`);
 export const updateIssueStatus = (id, status) =>
   API.patch(`/admin/issues/${id}/status`, { status });
 
@@ -76,7 +89,9 @@ const api = {
   getAllIssues,
   getChatHistory,
   getChatMessages,
-  updateIssueStatus, // also export here for convenience
+  getDistrictIssues,
+  getDistrictStats,
+  updateIssueStatus,
   updateprofilepic,
   updateUserBio,
 };

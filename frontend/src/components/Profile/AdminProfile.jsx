@@ -10,25 +10,32 @@ import {
 const AdminProfile = () => {
   const [profile, setProfile] = useState(null);
   const [avatar, setAvatar] = useState(null);
-  const currentUser = JSON.parse(localStorage.getItem("user"));
-  const userId = currentUser._id;
+  const currentUser = JSON.parse(localStorage.getItem("user") || "{}");
+  const userId = currentUser?._id;
   const [totalCount, setTotalCount] = useState(0);
+
   useEffect(() => {
+    if (!userId) {
+      window.location.href = "/login";
+      return;
+    }
+
     const fetchUserProfile = async () => {
       try {
         const res = await getUserProfile(userId);
         setProfile(res.data);
-        const totalCount = res.data.unsolvedCount + res.data.inProgressCount + res.data.solvedCount;
-        setTotalCount(totalCount);
-
+        const data = res.data || {};
+        const count =
+          (data.unsolvedCount || 0) +
+          (data.inProgressCount || 0) +
+          (data.solvedCount || 0);
+        setTotalCount(count);
       } catch (err) {
         console.error("Failed to fetch user profile", err);
       }
     };
 
-    if (userId) {
-      fetchUserProfile();
-    }
+    fetchUserProfile();
   }, [userId]);
 
   const handleProfilePicChange = (e) => {
@@ -46,7 +53,7 @@ const AdminProfile = () => {
   };
 
   const handleBioChange = () => {
-    const newBio = prompt("Enter your new bio:", profile.bio || "");
+    const newBio = prompt("Enter your new bio:", profile?.bio || "");
     if (newBio !== null) {
       updateUserBio(newBio)
         .then(() => {
@@ -62,6 +69,7 @@ const AdminProfile = () => {
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
+    localStorage.removeItem("details");
     window.location.href = "/login";
   };
 
