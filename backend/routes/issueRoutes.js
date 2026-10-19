@@ -15,22 +15,19 @@ const {
 } = require("../controllers/issueController");
 
 // Public routes
-
+router.get("/all", getAllIssues);
+router.get("/:id", getIssueById);
 
 // Protected routes
 router.use(protect);
 
-router.get("/all", getAllIssues);
 router.get("/my-issues", getUserIssues);
 router.get("/stats", getIssueStats);
 
- router.post("/", upload.array("images"), createIssue);
+router.post("/", upload.array("images"), createIssue);
 router.post("/:id/comments", addComment);
 router.post("/:id/upvote", toggleUpvote);
 
 router.patch("/:issueId/status", updateIssueStatus);
-
-// ⚠️ KEEP THIS LAST
-router.get("/:id", getIssueById);
 
 module.exports = router;

@@ -31,8 +31,9 @@ const Home = () => {
       setIssues(data);
     } catch (err) {
       console.error("Failed to load issues:", err);
+      const serverMsg = err.response?.data?.message || err.response?.data?.msg;
       setError(
-        err.response?.data?.message ||
+        serverMsg ||
           "Could not load issues. The backend service may be spinning up on Render (takes ~30-60s on first load)."
       );
     } finally {

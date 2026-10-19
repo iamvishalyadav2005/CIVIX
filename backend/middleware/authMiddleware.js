@@ -6,7 +6,7 @@ exports.protect = async (req, res, next) => {
     // Get token from header
     const token = req.headers.authorization?.split(" ")[1];
     if (!token) {
-      return res.status(401).json({ msg: "No token, authorization denied" });
+      return res.status(401).json({ message: "No token, authorization denied", msg: "No token, authorization denied" });
     }
 
     // Verify token
@@ -15,7 +15,7 @@ exports.protect = async (req, res, next) => {
     // Changed from decoded.userId to decoded.id
     const user = await User.findById(decoded.id).select("-password");
     if (!user) {
-      return res.status(401).json({ msg: "User not found" });
+      return res.status(401).json({ message: "User not found", msg: "User not found" });
     }
 
     // Add user to request object
@@ -23,7 +23,7 @@ exports.protect = async (req, res, next) => {
     next();
   } catch (err) {
     console.error('Token verification error:', err);
-    return res.status(403).json({ msg: "Invalid token" });
+    return res.status(401).json({ message: "Session expired or invalid token", msg: "Session expired or invalid token" });
   }
 };
 

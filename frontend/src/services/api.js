@@ -32,6 +32,29 @@ API.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
+// Automatically handle token expiration / unauthorized responses
+API.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const status = error.response ? error.response.status : null;
+    if (status === 401 || status === 403) {
+      const currentPath = window.location.pathname;
+      const isAuthPage =
+        currentPath === "/login" ||
+        currentPath === "/register" ||
+        currentPath === "/";
+
+      if (!isAuthPage && localStorage.getItem("token")) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        localStorage.removeItem("details");
+        window.location.href = "/login?expired=true";
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
 // Authentication routes
 export const login = (credentials) => API.post("/auth/login", credentials);
 export const register = (userData) => API.post("/auth/register", userData);
