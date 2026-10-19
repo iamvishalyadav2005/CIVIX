@@ -66,7 +66,10 @@ const Register = () => {
       navigate("/dashboard");
     } catch (err) {
       setError(
-        err.response?.data?.message || "Failed to register. Please try again."
+        err.response?.data?.message ||
+        err.response?.data?.error ||
+        err.response?.data?.msg ||
+        "Failed to register. Please try again."
       );
     }
   };

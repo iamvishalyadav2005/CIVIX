@@ -24,10 +24,27 @@ const register = async (req, res) => {
         .json({ message: "Username, email and password are required" });
     }
 
-    // Check existing user
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ message: "User already exists" });
+    const trimmedUsername = username.trim();
+    const normalizedEmail = email.trim().toLowerCase();
+
+    // Check existing email
+    const existingEmail = await User.findOne({
+      email: { $regex: new RegExp(`^${normalizedEmail}$`, "i") },
+    });
+    if (existingEmail) {
+      return res
+        .status(400)
+        .json({ message: "An account with this email already exists" });
+    }
+
+    // Check existing username
+    const existingUsername = await User.findOne({
+      username: { $regex: new RegExp(`^${trimmedUsername}$`, "i") },
+    });
+    if (existingUsername) {
+      return res.status(400).json({
+        message: `Username "${trimmedUsername}" is already taken. Please choose another username.`,
+      });
     }
 
     // Validate admin registration
@@ -39,28 +56,32 @@ const register = async (req, res) => {
       }
 
       // Validate government email
-      if (!email.endsWith("@gov.in") && !email.endsWith("@nic.in")) {
+      if (!normalizedEmail.endsWith("@gov.in") && !normalizedEmail.endsWith("@nic.in")) {
         return res.status(403).json({
-          message: "Only official government emails allowed for admins",
+          message: "Only official government emails allowed for admins (@gov.in or @nic.in)",
         });
       }
 
       // Check if admin already exists for this district
-      const existingAdmin = await User.findOne({ role: "admin", districtCode });
+      const trimmedDistrict = districtCode.trim();
+      const existingAdmin = await User.findOne({ role: "admin", districtCode: trimmedDistrict });
       if (existingAdmin) {
         return res.status(400).json({
-          message: `Admin already exists for district ${districtCode}`,
+          message: `Admin already exists for district ${trimmedDistrict}`,
         });
       }
     }
 
     // Create new user
     const newUser = new User({
-      username,
-      email,
+      username: trimmedUsername,
+      email: normalizedEmail,
       password,
       role,
-      ...(role === "admin" && { employeeId, districtCode }),
+      ...(role === "admin" && {
+        employeeId: employeeId.trim(),
+        districtCode: districtCode.trim(),
+      }),
     });
 
     await newUser.save();
@@ -80,10 +101,17 @@ const register = async (req, res) => {
         role: newUser.role,
         districtCode: newUser.districtCode || null,
       },
-      details:newUser,
+      details: newUser,
     });
   } catch (error) {
     console.error("Registration error:", error);
+    if (error.code === 11000) {
+      const field = Object.keys(error.keyPattern || {})[0] || "field";
+      return res.status(400).json({
+        message: `${field.charAt(0).toUpperCase() + field.slice(1)} is already taken. Please choose another.`,
+        error: error.message,
+      });
+    }
     res.status(500).json({
       message: "Registration failed",
       error: error.message,
@@ -94,8 +122,14 @@ const register = async (req, res) => {
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
+    if (!email || !password) {
+      return res.status(400).json({ message: "Email and password are required" });
+    }
 
-    const user = await User.findOne({ email }).select("+password");
+    const normalizedEmail = email.trim().toLowerCase();
+    const user = await User.findOne({
+      email: { $regex: new RegExp(`^${normalizedEmail}$`, "i") },
+    }).select("+password");
 
     if (user && (await bcrypt.compare(password, user.password))) {
       const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
